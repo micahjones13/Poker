@@ -8,8 +8,14 @@ namespace Poker
         {
             var deck = new Deck();
             deck.BuildDeck();
-            Console.WriteLine(deck.DeckList.Count);
             deck.PrintDeck();
         }
     }
 }
+
+
+/*
+Improve printing of cards (ace, king, ect)
+Hand class, dealing a hand, shuffling
+Build hand, give someone cards for their hand
+*/

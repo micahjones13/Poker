@@ -17,32 +17,39 @@ class Deck
             //4 suits, 13 of each card in each suit. 
             for (int j = 4; j > 0; j--)
             {
+                //add 1 of each of the 4 suits
                 switch (j)
                 {
                     case 4:
-                        DeckList.Add(new Card(i, CardType.Hearts));
+                        //This way adds values and types to the card, without the constructor
+                        DeckList.Add(new Card() { Value = i, Type = CardType.Hearts });
                         break;
                     case 3:
-                        DeckList.Add(new Card(i, CardType.Diamonds));
+                        DeckList.Add(new Card() { Value = i, Type = CardType.Diamonds });
                         break;
                     case 2:
-                        DeckList.Add(new Card(i, CardType.Spades));
+                        DeckList.Add(new Card() { Value = i, Type = CardType.Spades });
                         break;
                     case 1:
-                        DeckList.Add(new Card(i, CardType.Clubs));
+                        DeckList.Add(new Card() { Value = i, Type = CardType.Clubs });
                         break;
                 }
             }
 
         }
+
     }
 
     public void PrintDeck()
     {
-        Console.WriteLine($"The deck has {DeckList.Count}");
-        for (int i = 0; i < DeckList.Count; i++)
+        Console.WriteLine($"The deck has {DeckList.Count} cards.");
+        // for (int i = 0; i < DeckList.Count; i++)
+        // {
+        //     Console.WriteLine($"{DeckList[i].Value} of {DeckList[i].Type}");
+        // }
+        foreach (var Card in DeckList)
         {
-            Console.WriteLine($"{DeckList[i].Value} of {DeckList[i].Type}");
+            Card.PrintCard();
         }
     }
 
@@ -55,4 +62,3 @@ class Deck
 }
 
 
-//bulid deck, display all cards in deck
