@@ -7,6 +7,7 @@ namespace Poker
         static void Main(string[] args)
         {
             var deck = new Deck();
+            var table = new TexasTable(deck);
             // var hand = new Hand();
             deck.BuildDeck();
             deck.Shuffle();
@@ -22,7 +23,15 @@ namespace Poker
             playerHand.PrintHand();
             computerHand.PrintHand();
             Console.WriteLine("************************");
-            deck.PrintDeck();
+            // deck.PrintDeck();
+            Console.WriteLine("FLOP");
+
+            table.Flop();
+            table.PrintTable();
+            Console.WriteLine("************************");
+            Console.WriteLine("FLOP + RIVER");
+            table.TurnRiver();
+            table.PrintTable();
 
 
 
@@ -40,4 +49,7 @@ Need to either get rid of the Card that is dealt inside of the deck, or just kee
 
 Currently removing cards after they are dealt, so we will need to re-build the deck everytime a new round starts.
 
+Game starts, phase 1 shows 3 cards, phase 2 shows one, phase 3 shows one
+Test out new functions, print them and see where we're at
+Write out a game-flow and what we expect to happen in the game 
 */

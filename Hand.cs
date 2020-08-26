@@ -26,10 +26,7 @@ class Hand
 
     public void PrintHand()
     {
-        foreach (var card in HandList)
-        {
-            card.PrintCard();
-        }
+        HandList.PrintCards();
     }
 
 

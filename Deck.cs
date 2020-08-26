@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 class Deck
 {
-    public List<Card> DeckList { get; private set; } //list of type Card
+    private List<Card> DeckList { get; set; } //list of type Card
     public int DeckSize = 52;
 
     public void BuildDeck()
@@ -44,14 +44,8 @@ class Deck
     public void PrintDeck()
     {
         // Console.WriteLine($"The deck has {DeckList.Count} cards.");
-        // for (int i = 0; i < DeckList.Count; i++)
-        // {
-        //     Console.WriteLine($"{DeckList[i].Value} of {DeckList[i].Type}");
-        // }
-        foreach (var Card in DeckList)
-        {
-            Card.PrintCard();
-        }
+
+        DeckList.PrintCards();
     }
 
 
@@ -85,7 +79,23 @@ class Deck
         // DeckList.RemoveAt(1);
         return hand;
 
+        //may want to refactor to deal a certain number of cards
+
     }
+
+    //function that allows us to get the cards we need to add on table
+    public List<Card> SendCard(int numberOfCards)
+    {
+        List<Card> SendList = new List<Card>();
+        for (int i = 0; i < numberOfCards; i++)
+        {
+            SendList.Add(DeckList[0]);
+            DeckList.RemoveAt(0);
+        }
+        return SendList;
+    }
+
+
 
 
 }
