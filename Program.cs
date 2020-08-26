@@ -29,7 +29,7 @@ namespace Poker
             table.Flop();
             table.PrintTable();
             Console.WriteLine("************************");
-            Console.WriteLine("FLOP + RIVER");
+            Console.WriteLine("FLOP + RiiiIVER");
             table.TurnRiver();
             table.PrintTable();
 
