@@ -6,33 +6,9 @@ namespace Poker
     {
         static void Main(string[] args)
         {
-            var deck = new Deck();
-            var table = new TexasTable(deck);
-            // var hand = new Hand();
-            deck.BuildDeck();
-            deck.Shuffle();
-            deck.Shuffle();
-            deck.Shuffle();
-            // deck.PrintDeck();
-            // hand.AddCards(deck.DeckList[0]);
-            // hand.AddCards(deck.DeckList[1]);
-            var playerHand = deck.Deal();
-            var computerHand = deck.Deal();
-
-            Console.WriteLine("************************");
-            playerHand.PrintHand();
-            computerHand.PrintHand();
-            Console.WriteLine("************************");
-            // deck.PrintDeck();
-            Console.WriteLine("FLOP");
-
-            table.Flop();
-            table.PrintTable();
-            Console.WriteLine("************************");
-            Console.WriteLine("FLOP + RIVER");
-            table.TurnRiver();
-            table.PrintTable();
-
+            // var deck = new Deck();
+            var game = new GameEngine();
+            game.TexasHoldEm();
 
 
         }

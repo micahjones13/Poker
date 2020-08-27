@@ -13,10 +13,7 @@ class TexasTable
         TableList = new List<Card>(); //initialize
 
     }
-    public void BuildTable()
-    {
 
-    }
 
     //Flop and TurnRiver doing the same thing. Maybe combine later
     public void Flop()
@@ -26,7 +23,7 @@ class TexasTable
     }
     public void TurnRiver()
     {
-        var sendList = Deck.SendCard(1);
+        var sendList = Deck.SendCard();
         TableList.AddRange(sendList);
     }
     public void PrintTable()
