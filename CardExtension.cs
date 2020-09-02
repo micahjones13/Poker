@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 static class CardExtension
 {
     public static void PrintCards(this List<Card> Cards)
@@ -8,6 +9,11 @@ static class CardExtension
         {
             card.PrintCard();
         }
+    }
+    public static List<Card> Order(this IEnumerable<Card> Cards)
+    {
+
+        return Cards.OrderByDescending(card => (card.Value != 1 ? card.Value : 14)).ToList();
     }
 }
 

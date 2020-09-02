@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 class GameEngine
@@ -46,20 +47,83 @@ class GameEngine
 
 
     }
-    public void RoyalFlush(TexasTable table, Hand hand)
+    public List<Card> RoyalFlush(TexasTable table, Hand hand)
     {
-        // royal flush - ace(1), king, queen, jack, 10 all of same suit
-        bool isMatching = false;
+        // royal flush - ace(14), king(13), queen(12), jack(11), 10 all of same suit
+        // check to see if there is a flush first
+        var flushList = Flush(hand, table);
+        if (flushList == null)
+        {
+            return null;
+        }
+        //if not null, it has the 5 values
+        var orderedFlush = flushList.Order(); //ordered by decscending, but ace is treated as 14
+        //check to see if the values required for a royal flush are there
+        //if the first value after ordering it isn't ace, there is no royal flush
+        //Have a var that starts at 14, decreases every loop to check for correct values
+        var valueShouldBe = 14;
+        for (int i = 0; i < orderedFlush.Count(); i++)
+        {
+            //if not equal at any point, there is no royal flush
+            if (orderedFlush[i].Value != valueShouldBe)
+            {
+                return null;
+            }
+            valueShouldBe--;
+        }
+        return orderedFlush;
+
+    }
+    //Want to define a flush, so that we can use it in the royalflush
+    public List<Card> Flush(Hand hand, TexasTable table)
+    {
+        // flush - 5 cards of same suit
+
         var type = hand.HandList[0].Type;
-        if (hand.HandList[0].Type == hand.HandList[1].Type)
+        var type2 = hand.HandList[1].Type;
+        if (hand.HandList[0].Type != hand.HandList[1].Type)
         {
-            isMatching = true;
+            return null; //use a null check to see if their was a flush or not
         }
-        else
+        var matchingTypesList = table.TableList.Where(card => card.Type == type); //creates new list matchign the where condition
+        //matching list needs to be at least 3,
+        if (matchingTypesList.Count() < 3)
         {
-            return;
+            return null;
         }
-        var filtered = table.TableList.Where(card => card.Type == type); //creates new list matchign the where condition
+        //needs to have the best 5 cards avaliable, but of the same type
+        var orderedList = matchingTypesList.Order();
+        var ans = orderedList.Take(3).ToList();
+        ans.AddRange(hand.HandList);
+        return ans;
+
+    }
+    public List<Card> Straight(Hand hand, TexasTable table)
+    {
+        //need to combine hand and table, but only table values that are in sequence with hand
+        var playerHand = hand.HandList;
+        playerHand.AddRange(table.TableList);
+        var ordered = playerHand.Order();
+        // need to check ordered for a sequence matching a straight (5 in a row);
+        // loop through the orderd list, check if the diff between 2 values is > 1. If not, add to new list
+        var newList = new List<Card>();
+
+        //loop through orderd list, looping the count - 1 times to avoid out of bounds error
+        for (int i = 0; i < ordered.Count - 1; i++)
+        {
+            // if the current value - next value is 1, or the current value - prev value is -1, then they are a sequence
+            if (ordered[i].Value - ordered[i + 1].Value == 1 || ordered[i].Value - ordered[i - 1].Value == -1)
+            {
+                //store them inside newList
+                newList.Add(ordered[i]);
+            }
+        }
+        //if newlist doesn't have enough cards for a flush(5), then just return null
+        if (newList.Count() < 5)
+        {
+            return null;
+        }
+        return newList;
 
     }
     public void TexasHoldEm()
@@ -111,3 +175,17 @@ class GameEngine
         } while (!Quit());
     }
 }
+
+/*
+Winning Hands: 
+Royal Flush
+Straight Flush (five cards in a sequence, all one suit)
+Four of a kind
+Full House (3 of a kind with a pair)
+Flush
+Straight (5 in a sequence)
+Three of a kind
+Two pair (2 diff pairs)
+Pair
+High Card
+*/
