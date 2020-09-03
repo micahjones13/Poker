@@ -61,8 +61,15 @@ class GameEngine
         //check to see if the values required for a royal flush are there
         //if the first value after ordering it isn't ace, there is no royal flush
         //Have a var that starts at 14, decreases every loop to check for correct values
-        var valueShouldBe = 14;
-        for (int i = 0; i < orderedFlush.Count(); i++)
+        //If the first value is not 1 (ace), then we can return.
+        if (orderedFlush[0].Value != 1)
+        {
+            return null;
+        }
+
+        var valueShouldBe = 13;
+        //int i = 1, because we already checked for the ace. We want to check orderedFlush[1] and on 
+        for (int i = 1; i < orderedFlush.Count; i++)
         {
             //if not equal at any point, there is no royal flush
             if (orderedFlush[i].Value != valueShouldBe)
@@ -100,30 +107,65 @@ class GameEngine
     }
     public List<Card> Straight(Hand hand, TexasTable table)
     {
-        //need to combine hand and table, but only table values that are in sequence with hand
-        var playerHand = hand.HandList;
-        playerHand.AddRange(table.TableList);
-        var ordered = playerHand.Order();
-        // need to check ordered for a sequence matching a straight (5 in a row);
-        // loop through the orderd list, check if the diff between 2 values is > 1. If not, add to new list
-        var newList = new List<Card>();
 
-        //loop through orderd list, looping the count - 1 times to avoid out of bounds error
-        for (int i = 0; i < ordered.Count - 1; i++)
+        var playerHand = hand.HandList;
+        //Need to add table cards to hand cards to see all possibilites 
+        playerHand.AddRange(table.TableList);
+        var ordered = playerHand.OrderBy(card => card.Value).ToList(); //* ordering the cards by ascending(smallest to biggest) card value                                             
+        var orderedUnique = ordered.GroupBy(card => card.Value).Select(cards => cards.First()).ToList(); //* Takes the ordered list, filters out any duplicates
+
+        var sets = new Dictionary<int, List<Card>>(); //initialize our dict
+
+
+
+        //loop through orderd list, fill in sets dict
+        for (int i = 0; i < orderedUnique.Count; i++)
         {
-            // if the current value - next value is 1, or the current value - prev value is -1, then they are a sequence
-            if (ordered[i].Value - ordered[i + 1].Value == 1 || ordered[i].Value - ordered[i - 1].Value == -1)
+            //get the card out of orderedUnique at i
+            var card = orderedUnique[i];
+            //set the keyValue to the difference between card.Value and i
+            var keyValue = card.Value - i;
+
+            //if record already exists, add it to the list. Otherwise, add a new dict record
+            //if the sets at the keyValue is null, there is no entry for that keyValue, so make one
+            if (sets[keyValue] == null)
             {
-                //store them inside newList
-                newList.Add(ordered[i]);
+                //initializes a list of cards at that keyValue
+                sets[keyValue] = new List<Card>();
             }
+            //adds cards to that list
+            sets[keyValue].Add(card);
+
+
         }
-        //if newlist doesn't have enough cards for a flush(5), then just return null
-        if (newList.Count() < 5)
+
+        //*Dealing with aces here. 
+        //For each of the lists in the sets dictionary, we want to find lists that have 5 elements, and possilby ones that contain a king
+        //so that we can see if an ace would also be part of it.
+        foreach (var list in sets)
         {
-            return null;
+            //If the list has 4 or more elements and contains a king, possiblity of an ace needing ot be added too
+            if (list.Value.Count() >= 4 && list.Value.Any(card => card.Value == 13))
+            {
+                //store if there is an ace in the playerHand(combo of hand and table at this point). Returns the card, or null if not found
+                var ace = playerHand.FirstOrDefault(card => card.Value == 1);
+                //If it's not null, there is an ace available. Add it to this list now
+                if (ace != null)
+                {
+                    list.Value.Add(ace);
+                }
+            }
+            //if it's hitting this if, there is not list with a king and 4 or more elements, so check if there is a straight anywhere else.
+            if (list.Value.Count() >= 5)
+            {
+                //if there was a list with 5 or more elements, then we want to take the top 5
+                //Order is our extension, which orders by decsending based on card.Value. We take the top 5 of those, return it
+                return list.Value.Order().Take(5).ToList();
+            }
+
         }
-        return newList;
+        //if reaching this return, there is no straight. Return null.
+        return null;
 
     }
     public void TexasHoldEm()
