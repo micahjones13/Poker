@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 class Deck
 {
-    private List<Card> DeckList { get; set; } //list of type Card
+    public List<Card> DeckList { get; set; } //list of type Card 
     public int DeckSize = 52;
 
     public void BuildDeck()
@@ -84,7 +84,7 @@ class Deck
     }
 
     //function that allows us to get the cards we need to add on table
-    public List<Card> SendCard(int numberOfCards)
+    public List<Card> SendCard(int numberOfCards = 1) //default to 1
     {
         List<Card> SendList = new List<Card>();
         for (int i = 0; i < numberOfCards; i++)
