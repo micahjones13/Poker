@@ -38,15 +38,178 @@ class GameEngine
 
     public void DecideWinner(TexasTable table, Hand playerHand, Hand computerHand)
     {
-        // needs to use TableList and HandList to determine the hand(straight, flush, ect)
+        /*
+            Winning Hands: 
+            Royal Flush
+            Straight Flush (five cards in a sequence, all one suit)
+            Four of a kind
+            Full House (3 of a kind with a pair)
+            Flush
+            Straight (5 in a sequence)
+            Three of a kind
+            Two pair (2 diff pairs)
+            Pair
+            High Card
+        */
         // start at highest possible (royal flush), and as soon as one person has it and the other does not, they win
-        // need to compare HandList to TableList see if the cards are there to meet the royal flush reqs
+        var playerList = RoyalFlush(table, playerHand);
+        var computerList = RoyalFlush(table, computerHand);
+        if (playerList != null && computerList == null)
+        {
+            //player wins
+            DeclareWinner(playerHand, "Player");
 
+        }
+        else if (RoyalFlush(table, playerHand) == null && RoyalFlush(table, computerHand) != null)
+        {
+            //comuter wins
+            DeclareWinner(computerHand, "Computer");
+        }
 
-        // compare player's hand and computer's hand to see who's is better
+        //straight flush
+        if (StraightFlush(table, playerHand) != null && StraightFlush(table, computerHand) == null)
+        {
+            //player wins
+            DeclareWinner(playerHand, "Player");
+
+        }
+        else if (StraightFlush(table, playerHand) == null && StraightFlush(table, computerHand) != null)
+        {
+            //comp wins
+            DeclareWinner(computerHand, "Computer");
+
+        }
+        //4 of a kind
+        if (AnyOfAKind(table, playerHand, 4) != null && AnyOfAKind(table, computerHand, 4) == null)
+        {
+            //player wins
+            DeclareWinner(playerHand, "Player");
+
+        }
+        else if (AnyOfAKind(table, playerHand, 4) == null && AnyOfAKind(table, computerHand, 4) != null)
+        {
+            //comp wins
+            DeclareWinner(computerHand, "Computer");
+
+        }
+        //Full House (3 of a kind, pair)
+        //              3 of a kind1                                        Pair                            Comp does not have 3 of a kind
+        if (AnyOfAKind(table, playerHand, 3) != null && AnyOfAKind(table, playerHand, 2) != null && AnyOfAKind(table, computerHand, 3) == null)
+        {
+            //player wins
+            DeclareWinner(playerHand, "Player");
+
+        }
+        else if ((AnyOfAKind(table, computerHand, 3) != null && AnyOfAKind(table, computerHand, 2) != null && AnyOfAKind(table, playerHand, 3) == null))
+        {
+            //comp wins
+            DeclareWinner(computerHand, "Computer");
+
+        }
+        //Flush
+        if (Flush(playerHand, table) != null && Flush(computerHand, table) == null)
+        {
+            //player wins
+            DeclareWinner(playerHand, "Player");
+
+        }
+        else if (Flush(playerHand, table) == null && Flush(computerHand, table) != null)
+        {
+            //comp wins
+            DeclareWinner(computerHand, "Computer");
+
+        }
+        //straight 
+        if (Straight(playerHand, table) != null && Straight(computerHand, table) == null)
+        {
+            //player wins
+            DeclareWinner(playerHand, "Player");
+
+        }
+        else if (Straight(playerHand, table) == null && Straight(computerHand, table) != null)
+        {
+            //comp wins
+            DeclareWinner(computerHand, "Computer");
+
+        }
+        //3 of a kind
+        if (AnyOfAKind(table, playerHand, 3) != null && AnyOfAKind(table, computerHand, 3) == null)
+        {
+            //player wins
+            DeclareWinner(playerHand, "Player");
+        }
+        else if (AnyOfAKind(table, playerHand, 3) == null && AnyOfAKind(table, computerHand, 3) != null)
+        {
+            //comp wins
+            DeclareWinner(computerHand, "Computer");
+
+        }
+        // 2 pair (2 diff pair)
+        //! Problem here. 2 pairs will always be true, since anyofakind function returns the first occurence of a pair, and doesn't remove that pair when called again.
+        if (AnyOfAKind(table, playerHand, 2) != null && AnyOfAKind(table, computerHand, 2) == null)
+        {
+            //player has 1 pair, need to check if two. Modify playerHand to remove the first pair
+            var returnList = AnyOfAKind(table, playerHand, 2);
+            //! Not sure if this copy will work, since it's copying an instance of the hand class
+            var playerHandCopy = playerHand;
+            playerHandCopy.HandList.Remove(returnList[0]);
+            //check if a pair still reamins
+            if (AnyOfAKind(table, playerHandCopy, 2) != null)
+            {
+                //player has 2 pair, wins
+                DeclareWinner(playerHand, "Player");
+
+            }
+        }
+        else if (AnyOfAKind(table, playerHand, 2) == null && AnyOfAKind(table, computerHand, 2) != null)
+        {
+            //comp has 1 pair
+            var returnList = AnyOfAKind(table, computerHand, 2);
+            var computerHandCopy = computerHand;
+            computerHandCopy.HandList.Remove(returnList[0]);
+            //check if a pair still reamins
+            if (AnyOfAKind(table, computerHand, 2) != null)
+            {
+                //computer has 2 pair, wins
+                DeclareWinner(computerHand, "Computer");
+            }
+        }
+        //Pair
+        if (AnyOfAKind(table, playerHand, 2) != null && AnyOfAKind(table, computerHand, 2) == null)
+        {
+            //player wins
+            DeclareWinner(playerHand, "Player");
+
+        }
+        else if (AnyOfAKind(table, playerHand, 2) == null && AnyOfAKind(table, computerHand, 2) != null)
+        {
+            //comp wins
+            DeclareWinner(computerHand, "Computer");
+
+        }
+        //high card
+        //ordering each hand, comparing the first value in each. Highest one wins
+        var orderedPlayer = playerHand.HandList.Order();
+        var orderedComputer = computerHand.HandList.Order();
+        if (orderedPlayer[0].Value > orderedComputer[0].Value)
+        {
+            DeclareWinner(playerHand, "Player");
+        }
+        else if (orderedPlayer[0].Value < orderedComputer[0].Value)
+        {
+            DeclareWinner(computerHand, "Computer");
+        }
 
 
     }
+    //* Declare winner function, just returns the winning hand and maybe a message of who won
+    public List<Card> DeclareWinner(Hand hand, string winner)
+    {
+        Console.WriteLine($"The winner is {winner}");
+        hand.HandList.PrintCards();
+        return hand.HandList;
+    }
+
     public List<Card> RoyalFlush(TexasTable table, Hand hand)
     {
         // royal flush - ace(14), king(13), queen(12), jack(11), 10 all of same suit
@@ -79,6 +242,19 @@ class GameEngine
             valueShouldBe--;
         }
         return orderedFlush;
+
+    }
+    public List<Card> StraightFlush(TexasTable table, Hand hand)
+    {
+        var flushReturn = Flush(hand, table); //going to either return list that meets flush reqs, or null
+        var straightReturn = Straight(hand, table); //going to either return list that meets straight reqs, or null.
+        // if either function returns null, there is no straight flush, return null.
+        if (flushReturn == null || straightReturn == null)
+        {
+            return null;
+        }
+        // if both do return a list, then there is a striaght flush. Need to return that hand.
+        return straightReturn;
 
     }
     //Want to define a flush, so that we can use it in the royalflush
@@ -168,6 +344,33 @@ class GameEngine
         return null;
 
     }
+
+    public List<Card> AnyOfAKind(TexasTable table, Hand hand, int amountOfAKind)
+    {
+        //combine table and hand
+        var playerHand = hand.HandList;
+        playerHand.AddRange(table.TableList);
+        //order the list
+
+        var returnHand = new List<Card>();
+
+        // Select card.value, Count(*) as Dups
+        // From card
+        // GroupBy card.value having Count > 1
+        //find any pairs, 3 of a kind, 4 of a kind
+        //                  group by the card value,   where groupings have more than 1,     select the values: 
+        var groupings = playerHand.GroupBy(card => card.Value)
+            .Where(card => card.Count() == amountOfAKind)
+            .Select(cardGrouping => new { cards = cardGrouping.ToList(), cardValue = cardGrouping.Key, Amount = cardGrouping.Count() })
+            .OrderByDescending(card => (card.cardValue != 1 ? card.cardValue : 14))
+            .ToList();
+        //we have a list of values and the amount that they occur
+        // need to go through the list, find the highest occurence 
+        //order, look for first record that is 2 or more
+
+        return groupings.FirstOrDefault()?.cards; // ?. only go into object if it is not null and exists
+    }
+
     public void TexasHoldEm()
     {
         var deck = new Deck();
@@ -208,8 +411,7 @@ class GameEngine
 
 
 
-            Console.WriteLine("Computers hand: ");
-            computerHand.PrintHand();
+            DecideWinner(table, playerHand, computerHand);
 
 
 
@@ -218,16 +420,3 @@ class GameEngine
     }
 }
 
-/*
-Winning Hands: 
-Royal Flush
-Straight Flush (five cards in a sequence, all one suit)
-Four of a kind
-Full House (3 of a kind with a pair)
-Flush
-Straight (5 in a sequence)
-Three of a kind
-Two pair (2 diff pairs)
-Pair
-High Card
-*/
