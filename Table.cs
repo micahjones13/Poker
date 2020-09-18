@@ -4,7 +4,7 @@ using System.Collections.Generic;
 //This whole class is specific to Texas hold em
 class TexasTable
 {
-    public List<Card> TableList { get; private set; }
+    public List<Card> TableList { get; set; } //*private set
     public Deck Deck { get; set; }
 
     public TexasTable(Deck deck)
