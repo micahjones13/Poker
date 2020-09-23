@@ -12,15 +12,16 @@ class Hand
 
     public void AddCards(Card card)
     {
+        HandList.Add(card);
         // if the HandList is not greater than the handsize (2), then you can add cards.
-        if (HandList.Count < HandSize)
-        {
-            HandList.Add(card);
-        }
-        else
-        {
-            Console.WriteLine($"You already have enough cards");
-        }
+        // if (HandList.Count < HandSize)
+        // {
+        //     HandList.Add(card);
+        // }
+        // else
+        // {
+        //     Console.WriteLine($"You already have enough cards");
+        // }
         //later on return true/false on if a card was added or not
     }
 
