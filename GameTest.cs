@@ -158,19 +158,20 @@ class GameTest
     public void TwoPairTest()
     {
         //2 diff pairs, this case 2 2's and 2 3's 
-        TestHand.HandList = new List<Card> { new Card { Value = 2, Type = CardType.Hearts }, new Card { Value = 2, Type = CardType.Clubs } };
-        TestTable.TableList = new List<Card> { new Card { Value = 3, Type = CardType.Diamonds }, new Card { Value = 3, Type = CardType.Spades }, new Card { Value = 4, Type = CardType.Hearts } };
-
-        var testHandCopy = new List<Card>(TestHand.HandList);
-
+        TestHand.HandList = new List<Card> { new Card { Value = 2, Type = CardType.Hearts }, new Card { Value = 3, Type = CardType.Clubs } };
+        TestTable.TableList = new List<Card> { new Card { Value = 2, Type = CardType.Diamonds }, new Card { Value = 3, Type = CardType.Spades }, new Card { Value = 4, Type = CardType.Hearts } };
+        var testHandCopy = new Hand();
+        testHandCopy.HandList.AddRange(TestHand.HandList);
         var firstPair = TestGame.AnyOfAKind(TestTable, TestHand, 2);
         var handWithoutRemoval = TestGame.AnyOfAKind(TestTable, TestHand, 2);
-        testHandCopy.AddRange(TestTable.TableList);
+
 
         if (firstPair != null)
         {
-            testHandCopy.Remove(firstPair[0]);
-            var secondPair = TestGame.AnyOfAKind(TestTable, TestHand, 2);
+            // TestHand.HandList.Remove(firstPair[0]);
+            testHandCopy.HandList.Remove(firstPair[0]);
+            TestTable.TableList.Remove(firstPair[0]);
+            var secondPair = TestGame.AnyOfAKind(TestTable, testHandCopy, 2); //! Needs to use 
             if (secondPair != null)
             {
                 Console.WriteLine("SUCCESS: 2 pair Worked");

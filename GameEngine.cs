@@ -51,6 +51,8 @@ class GameEngine
             Pair
             High Card
         */
+        var tableCopy = new TexasTable(new Deck());
+
         // start at highest possible (royal flush), and as soon as one person has it and the other does not, they win
         var playerList = RoyalFlush(table, playerHand);
         var computerList = RoyalFlush(table, computerHand);
@@ -171,10 +173,12 @@ class GameEngine
             var returnList = AnyOfAKind(table, playerHand, 2);
             //! Not sure if this copy will work, since it's copying an instance of the hand class
             var playerHandCopy = new Hand();
+            tableCopy.TableList.AddRange(table.TableList);
             playerHandCopy.HandList.AddRange(playerHand.HandList);
             playerHandCopy.HandList.Remove(returnList[0]);
+            tableCopy.TableList.Remove(returnList[0]);
             //check if a pair still reamins
-            if (AnyOfAKind(table, playerHandCopy, 2) != null)
+            if (AnyOfAKind(tableCopy, playerHandCopy, 2) != null)
             {
                 //player has 2 pair, wins
                 DeclareWinner(AnyOfAKind(table, playerHandCopy, 2), "Player", "2 Pair");
@@ -189,9 +193,11 @@ class GameEngine
             var returnList = AnyOfAKind(table, computerHand, 2);
             var computerHandCopy = new Hand();
             computerHandCopy.HandList.AddRange(computerHand.HandList);
+            tableCopy.TableList.AddRange(table.TableList);
             computerHandCopy.HandList.Remove(returnList[0]);
+            tableCopy.TableList.Remove(returnList[0]);
             //check if a pair still reamins
-            if (AnyOfAKind(table, computerHandCopy, 2) != null)
+            if (AnyOfAKind(tableCopy, computerHandCopy, 2) != null)
             {
                 //computer has 2 pair, wins
                 DeclareWinner(AnyOfAKind(table, computerHand, 2), "Computer", "2 Pair");
@@ -205,7 +211,7 @@ class GameEngine
         if (AnyOfAKind(table, playerHand, 2) != null && AnyOfAKind(table, computerHand, 2) == null)
         {
             //player wins
-            Console.WriteLine("INSIDE WIN FOR PAIR");
+
             DeclareWinner(AnyOfAKind(table, playerHand, 2), "Player", "Pair");
             return;
 
@@ -214,7 +220,7 @@ class GameEngine
         else if (AnyOfAKind(table, playerHand, 2) == null && AnyOfAKind(table, computerHand, 2) != null)
         {
             //comp wins
-            Console.WriteLine("INSIDE WIN FOR PAIR");
+
             DeclareWinner(AnyOfAKind(table, computerHand, 2), "Computer", "Pair");
             return;
         }
@@ -223,12 +229,7 @@ class GameEngine
         //ordering each hand, comparing the first value in each. Highest one wins
         var orderedPlayer = playerHand.HandList.Order();
         var orderedComputer = computerHand.HandList.Order();
-        //Making copies of handlist for player and computer
-        // var combinedPlayer = new List<Card>(playerHand.HandList);
-        // var combinedComputer = new List<Card>(computerHand.HandList);
-        // combining the table cards with each hand cards, in order to return the full list for the declarewinner function
-        // combinedComputer.AddRange(table.TableList);
-        // combinedPlayer.AddRange(table.TableList);
+
 
 
         //if player has an ace and computer doesn't, or if the value of player's high card is greater than comp's
@@ -472,6 +473,129 @@ class GameEngine
 
 
         } while (!Quit());
+    }
+
+    public void HitOrStay(Hand playerHand, Deck deck)
+    {
+        bool hit = true;
+        do
+        {
+            Console.WriteLine("1 - Hit or 2 - stay?");
+            var res = Console.ReadLine();
+            if (res == "1")
+            {
+                //hit
+                playerHand = deck.Deal(playerHand, 1);
+                //print hand
+                playerHand.PrintHand();
+                //run check if bust function
+                if (Bust(playerHand) > 21)
+                {
+                    Console.WriteLine("Player Busts!");
+                    Console.WriteLine($"Total: {Bust(playerHand)}");
+
+                    break;
+                }
+
+            }
+            else
+            {
+                //stay
+                Console.WriteLine($"Player stays with a total of: {Bust(playerHand)}");
+                hit = false;
+            }
+        }
+        while (hit);
+    }
+
+    public int Bust(Hand playerHand)
+    {
+
+        //check values in hand to see if over 21
+        var sum = playerHand.HandList.Sum(card => card.Value);
+        // bool isAce = playerHand.HandList.Any(card => card.Value == 1);
+        var aceList = playerHand.HandList.Where(card => card.Value == 1);
+        var faceList = playerHand.HandList.Where(card => card.Value == 13 || card.Value == 12 || card.Value == 11);
+
+
+        var kingList = playerHand.HandList.Where(card => card.Value == 13);
+        var queenList = playerHand.HandList.Where(card => card.Value == 12);
+        var jackList = playerHand.HandList.Where(card => card.Value == 11);
+        var aceAmount = aceList.Count();
+        var faceAmount = faceList.Count();
+        var kingAmount = kingList.Count();
+        var queenAmount = queenList.Count();
+        var jackAmount = jackList.Count();
+
+        //if there are no aces or face cards, we can just check the sum amount
+        if (sum > 21 && aceAmount == 0 && faceAmount == 0)
+        {
+            return sum;
+        }
+        //if there are face cards, we need them to all be equal to 10.
+        if (faceAmount > 0)
+        {
+            //Subtract the correct ammount for each to make them equal to 10
+            if (kingAmount > 0)
+            {
+                sum -= 3;
+            }
+            if (queenAmount > 0)
+            {
+                sum -= 2;
+            }
+            if (jackAmount > 0)
+            {
+                sum -= 1;
+            }
+
+        }
+        //check how many aces. Add 10 to sum for each ace. If sum > 21, no longer add 10 for 1 ace.
+        if (aceAmount > 0)
+        {
+            //add 10 to sum for each ace unless it's gonna bust
+            for (int i = aceAmount; i > 0; i--)
+            {
+                sum += 10;
+                if (sum > 21)
+                {
+                    sum -= 10;
+                    break;
+                }
+            }
+            if (sum > 21)
+            {
+                return sum;
+            }
+        }
+
+        return sum;
+
+
+    }
+    public void BlackJack()
+    {
+
+        do
+        {
+            var deck = new Deck();
+            deck.BuildDeck();
+
+            deck.Shuffle();
+            deck.Shuffle();
+            deck.Shuffle();
+            var playerHand = deck.Deal(null, 2);
+            var computerHand = deck.Deal(null, 2);
+            //Initial Hands
+            Console.WriteLine("Player Hand: ");
+            playerHand.PrintHand();
+            Console.WriteLine("Computer hand: ");
+            computerHand.PrintHand();
+            //Ask to hit or stay
+            HitOrStay(playerHand, deck);
+
+        }
+        while (!Quit());
     }
 }
 

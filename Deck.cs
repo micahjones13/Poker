@@ -69,14 +69,18 @@ class Deck
         }
     }
 
-    public Hand Deal()
+    public Hand Deal(Hand hand = null, int numberOfCards = 2)
     {
-        var hand = new Hand();
-        hand.AddCards(DeckList[0]);
-        hand.AddCards(DeckList[1]);
+        if (hand == null)
+        {
+            hand = new Hand();
+        }
+        for (int i = numberOfCards; i > 0; i--)
+        {
+            hand.AddCards(DeckList[0]);
+            DeckList.Remove(DeckList[0]);
+        }
 
-        DeckList.RemoveRange(0, 2);
-        // DeckList.RemoveAt(1);
         return hand;
 
         //may want to refactor to deal a certain number of cards
