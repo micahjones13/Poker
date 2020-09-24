@@ -480,6 +480,7 @@ class GameEngine
         bool hit = true;
         do
         {
+            Console.WriteLine($"Current total: {Bust(playerHand)}");
             Console.WriteLine("1 - Hit or 2 - stay?");
             var res = Console.ReadLine();
             if (res == "1")
@@ -487,13 +488,16 @@ class GameEngine
                 //hit
                 playerHand = deck.Deal(playerHand, 1);
                 //print hand
+                Console.WriteLine("*******************************");
+                Console.WriteLine("Player Hand: ");
                 playerHand.PrintHand();
+                Console.WriteLine("*******************************");
                 //run check if bust function
                 if (Bust(playerHand) > 21)
                 {
-                    Console.WriteLine("Player Busts!");
-                    Console.WriteLine($"Total: {Bust(playerHand)}");
-
+                    Console.WriteLine("*******************************");
+                    Console.WriteLine($"Player Busts! Total: {Bust(playerHand)}");
+                    Console.WriteLine("*******************************");
                     break;
                 }
 
@@ -502,12 +506,42 @@ class GameEngine
             {
                 //stay
                 Console.WriteLine($"Player stays with a total of: {Bust(playerHand)}");
+                Console.WriteLine("*******************************");
                 hit = false;
             }
         }
         while (hit);
     }
+    public void ComputerHitOrStay(Hand computerHand, Deck deck)
+    {
+        //have some calculations to decide if the computer will hit or stay
+        //we could make it so that the computer won't hit if the distance to 21 is small enough
+        var sum = Bust(computerHand);
+        do
+        {
+            //if computer is at 15 or less, then get another card
+            if (sum <= 16)
+            {
+                deck.Deal(computerHand, 1);
+                Console.WriteLine("Computer hand: ");
+                computerHand.PrintHand();
+                Console.WriteLine("*******************************");
+                sum = Bust(computerHand);
+            }
+            else break;
+        } while (sum < 21);
 
+        if (sum > 21)
+        {
+            Console.WriteLine($"Computer busts! Total: {sum}");
+            Console.WriteLine("*******************************");
+        }
+        else
+        {
+            Console.WriteLine($"Computer stays with {sum}");
+            Console.WriteLine("*******************************");
+        }
+    }
     public int Bust(Hand playerHand)
     {
 
@@ -517,7 +551,7 @@ class GameEngine
         var aceList = playerHand.HandList.Where(card => card.Value == 1);
         var faceList = playerHand.HandList.Where(card => card.Value == 13 || card.Value == 12 || card.Value == 11);
 
-
+        //getting all aces kings, queens and jacks
         var kingList = playerHand.HandList.Where(card => card.Value == 13);
         var queenList = playerHand.HandList.Where(card => card.Value == 12);
         var jackList = playerHand.HandList.Where(card => card.Value == 11);
@@ -536,15 +570,15 @@ class GameEngine
         if (faceAmount > 0)
         {
             //Subtract the correct ammount for each to make them equal to 10
-            if (kingAmount > 0)
+            for (int i = kingAmount; i > 0; i--)
             {
                 sum -= 3;
             }
-            if (queenAmount > 0)
+            for (int i = queenAmount; i > 0; i--)
             {
                 sum -= 2;
             }
-            if (jackAmount > 0)
+            for (int i = jackAmount; i > 0; i--)
             {
                 sum -= 1;
             }
@@ -573,6 +607,38 @@ class GameEngine
 
 
     }
+    public void BlackJackWinner(Hand playerHand, Hand computerHand)
+    {
+        var playerSum = Bust(playerHand);
+        var computerSum = Bust(computerHand);
+        //player busts
+        if (playerSum > 21 && computerSum <= 21)
+        {
+            Console.WriteLine("Computer wins!");
+        }
+        //computer busts
+        else if (computerSum > 21 && playerSum <= 21)
+        {
+            Console.WriteLine("Player wins!");
+        }
+        else if (playerSum <= 21 && playerSum > computerSum)
+        {
+            Console.WriteLine("Player wins!");
+        }
+        else if (computerSum <= 21 && computerSum > playerSum)
+        {
+            Console.WriteLine("Computer wins!");
+        }
+        else if (computerSum == playerSum)
+        {
+            Console.WriteLine("It's a tie!");
+        }
+        else
+        {
+            Console.WriteLine("Computer and player both bust!");
+        }
+
+    }
     public void BlackJack()
     {
 
@@ -587,12 +653,17 @@ class GameEngine
             var playerHand = deck.Deal(null, 2);
             var computerHand = deck.Deal(null, 2);
             //Initial Hands
+            Console.WriteLine("*******************************");
             Console.WriteLine("Player Hand: ");
             playerHand.PrintHand();
+            Console.WriteLine("*******************************");
             Console.WriteLine("Computer hand: ");
             computerHand.PrintHand();
+            Console.WriteLine("*******************************");
             //Ask to hit or stay
             HitOrStay(playerHand, deck);
+            ComputerHitOrStay(computerHand, deck);
+            BlackJackWinner(playerHand, computerHand);
 
         }
         while (!Quit());

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 class Hand
 {
-    private int HandSize = 2;
+    // private int HandSize = 2;
     public List<Card> HandList { get; set; } //storing the hand as a list, !Private set
 
     public Hand()
