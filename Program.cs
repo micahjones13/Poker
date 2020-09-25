@@ -14,14 +14,14 @@ namespace Poker
             var table = new TexasTable(deck);
             //* Run Game
             // game.TexasHoldEm();
-            game.BlackJack();
+            game.ChooseGame();
 
 
 
 
             //* Testing
             var gameTest = new GameTest(game, hand, deck, table);
-            // gameTest.RunTests();
+            // gameTest.RunPokerTests();
 
 
 

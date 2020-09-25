@@ -4,6 +4,7 @@ class GameTest
 {
     public GameEngine TestGame { get; set; }
     public Hand TestHand { get; set; }
+    public Hand ComputerTestHand { get; set; }
     public Deck TestDeck { get; set; }
     public TexasTable TestTable { get; set; }
     public GameTest(GameEngine gametest, Hand testhand, Deck testdeck, TexasTable testtable)
@@ -211,7 +212,7 @@ class GameTest
         }
     }
     // No test for high card becuase it's not actually a GameEngine function, it's doing the check in the DecideWinner. 
-    public void RunTests()
+    public void RunPokerTests()
     {
         RoyalFlushTest();
         StraightFlushTest();
@@ -222,6 +223,42 @@ class GameTest
         ThreeOfAKindTest();
         TwoPairTest();
         PairTest();
+
+    }
+    //* Blackjack Tests
+    public void BothBust()
+    {
+        //initializes hands for player(testhand) and computer, each with a sum of 25
+        TestHand.HandList = new List<Card> { new Card { Value = 10, Type = CardType.Hearts }, new Card { Value = 10, Type = CardType.Diamonds }, new Card { Value = 5, Type = CardType.Diamonds } };
+        ComputerTestHand.HandList = new List<Card> { new Card { Value = 10, Type = CardType.Clubs }, new Card { Value = 10, Type = CardType.Spades }, new Card { Value = 5, Type = CardType.Clubs } };
+        //Run bust function on both, and expect the return to be >21
+        if (TestGame.Bust(TestHand) > 21 && TestGame.Bust(ComputerTestHand) > 21)
+        {
+            Console.WriteLine("SUCCESS: BothBust");
+        }
+        else
+        {
+            Console.WriteLine("FAIL: BothBust");
+            Console.WriteLine($"Comp sum: {TestGame.Bust(ComputerTestHand)}");
+            Console.WriteLine($"Player sum: {TestGame.Bust(TestHand)}");
+        }
+    }
+    public void AcesTests()
+    {
+        //Tests interactions with aces. 
+        //2 Aces, expect value to be 11
+        TestHand.HandList = new List<Card> { new Card { Value = 1, Type = CardType.Hearts }, new Card { Value = 1, Type = CardType.Diamonds } };
+        //3 Aces, Expect value to be 12
+        TestHand.HandList = new List<Card> { new Card { Value = 1, Type = CardType.Hearts }, new Card { Value = 1, Type = CardType.Diamonds } };
+        //4 aces, expect value to be 13
+        TestHand.HandList = new List<Card> { new Card { Value = 1, Type = CardType.Hearts }, new Card { Value = 1, Type = CardType.Diamonds } };
+
+
+
+
+    }
+    public void RunBlackJackTests()
+    {
 
     }
 }

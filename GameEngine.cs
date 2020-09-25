@@ -17,7 +17,7 @@ class GameEngine
         }
         else
         {
-
+            ChooseGame();
             return true;
         }
     }
@@ -33,6 +33,24 @@ class GameEngine
         else
         {
             WantToFold = true;
+        }
+    }
+
+    public void ChooseGame()
+    {
+        Console.WriteLine("Which game do you want to play? 1 - Poker, 2 - BlackJack, 3 - Quit");
+        var res = Console.ReadLine();
+        if (res == "1")
+        {
+            TexasHoldEm();
+        }
+        else if (res == "2")
+        {
+            BlackJack();
+        }
+        else
+        {
+            System.Environment.Exit(1);
         }
     }
 
