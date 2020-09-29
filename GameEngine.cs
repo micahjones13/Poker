@@ -119,21 +119,31 @@ class GameEngine
 
         }
         //Full House (3 of a kind, pair)
+        if (FullHouse(table, playerHand) != null && FullHouse(table, computerHand) == null)
+        {
+            DeclareWinner(FullHouse(table, playerHand), "Player", "Full House");
+            return;
+        }
+        else if (FullHouse(table, playerHand) == null && FullHouse(table, computerHand) != null)
+        {
+            DeclareWinner(FullHouse(table, computerHand), "Computer", "Full House");
+            return;
+        }
         //              3 of a kind1                                        Pair                            Comp does not have 3 of a kind
-        if (AnyOfAKind(table, playerHand, 3) != null && AnyOfAKind(table, playerHand, 2) != null && AnyOfAKind(table, computerHand, 3) == null)
-        {
-            //player wins
-            DeclareWinner(AnyOfAKind(table, playerHand, 3), "Player", "Full House");
-            return;
+        // if (AnyOfAKind(table, playerHand, 3) != null && AnyOfAKind(table, playerHand, 2) != null && AnyOfAKind(table, computerHand, 3) == null)
+        // {
+        //     //player wins
+        //     DeclareWinner(AnyOfAKind(table, playerHand, 3), "Player", "Full House");
+        //     return;
 
-        }
-        else if ((AnyOfAKind(table, computerHand, 3) != null && AnyOfAKind(table, computerHand, 2) != null && AnyOfAKind(table, playerHand, 3) == null))
-        {
-            //comp wins
-            DeclareWinner(AnyOfAKind(table, computerHand, 3), "Computer", "Full House");
-            return;
+        // }
+        // else if ((AnyOfAKind(table, computerHand, 3) != null && AnyOfAKind(table, computerHand, 2) != null && AnyOfAKind(table, playerHand, 3) == null))
+        // {
+        //     //comp wins
+        //     DeclareWinner(AnyOfAKind(table, computerHand, 3), "Computer", "Full House");
+        //     return;
 
-        }
+        // }
         //Flush
         if (Flush(playerHand, table) != null && Flush(computerHand, table) == null)
         {
@@ -184,48 +194,57 @@ class GameEngine
 
         }
         // 2 pair (2 diff pair)
+        if (TwoPair(table, playerHand) != null && TwoPair(table, computerHand) == null)
+        {
+            DeclareWinner(TwoPair(table, playerHand), "Player", "2 Pair");
+        }
+        else if (TwoPair(table, playerHand) == null && TwoPair(table, computerHand) != null)
+        {
+            DeclareWinner(TwoPair(table, computerHand), "Computer", "2 Pair");
+        }
         //! Problem here. 2 pairs will always be true, since anyofakind function returns the first occurence of a pair, and doesn't remove that pair when called again.
-        if (AnyOfAKind(table, playerHand, 2) != null && AnyOfAKind(table, computerHand, 2) == null)
-        {
-            //player has 1 pair, need to check if two. Modify playerHand to remove the first pair
-            var returnList = AnyOfAKind(table, playerHand, 2);
-            //! Not sure if this copy will work, since it's copying an instance of the hand class
-            var playerHandCopy = new Hand();
-            tableCopy.TableList.AddRange(table.TableList);
-            playerHandCopy.HandList.AddRange(playerHand.HandList);
-            playerHandCopy.HandList.Remove(returnList[0]);
-            tableCopy.TableList.Remove(returnList[0]);
-            //check if a pair still reamins
-            if (AnyOfAKind(tableCopy, playerHandCopy, 2) != null)
-            {
-                //player has 2 pair, wins
-                DeclareWinner(AnyOfAKind(table, playerHandCopy, 2), "Player", "2 Pair");
-                return;
+        //! Problem: this check still won't work if player has 2 pair, but computer has 1. It doesn't make it into the if, because computer has a pair.
+        // if (AnyOfAKind(table, playerHand, 2) != null && AnyOfAKind(table, computerHand, 2) == null)
+        // {
+        //     //player has 1 pair, need to check if two. Modify playerHand to remove the first pair
+        //     var returnList = AnyOfAKind(table, playerHand, 2);
+        //     //copy the playerHand so we can remove the first pair
+        //     var playerHandCopy = new Hand();
+        //     //table copy as well so we can remove a pair from table
+        //     tableCopy.TableList.AddRange(table.TableList);
+        //     playerHandCopy.HandList.AddRange(playerHand.HandList);
+        //     playerHandCopy.HandList.Remove(returnList[0]);
+        //     tableCopy.TableList.Remove(returnList[0]);
+        //     //check if a pair still reamins
+        //     if (AnyOfAKind(table, playerHandCopy, 2) != null)
+        //     {
+        //         //player has 2 pair, wins
+        //         DeclareWinner(AnyOfAKind(table, playerHandCopy, 2), "Player", "2 Pair");
+        //         return;
 
 
-            }
-        }
-        else if (AnyOfAKind(table, playerHand, 2) == null && AnyOfAKind(table, computerHand, 2) != null)
-        {
-            //comp has 1 pair
-            var returnList = AnyOfAKind(table, computerHand, 2);
-            var computerHandCopy = new Hand();
-            computerHandCopy.HandList.AddRange(computerHand.HandList);
-            tableCopy.TableList.AddRange(table.TableList);
-            computerHandCopy.HandList.Remove(returnList[0]);
-            tableCopy.TableList.Remove(returnList[0]);
-            //check if a pair still reamins
-            if (AnyOfAKind(tableCopy, computerHandCopy, 2) != null)
-            {
-                //computer has 2 pair, wins
-                DeclareWinner(AnyOfAKind(table, computerHand, 2), "Computer", "2 Pair");
-                return;
+        //     }
+        // }
+        // else if (AnyOfAKind(table, playerHand, 2) == null && AnyOfAKind(table, computerHand, 2) != null)
+        // {
+        //     //comp has 1 pair
+        //     var returnList = AnyOfAKind(table, computerHand, 2);
+        //     var computerHandCopy = new Hand();
+        //     computerHandCopy.HandList.AddRange(computerHand.HandList);
+        //     tableCopy.TableList.AddRange(table.TableList);
+        //     computerHandCopy.HandList.Remove(returnList[0]);
+        //     //! not actually removing from tableCopy, because it would have to be the same value and suit
+        //     tableCopy.TableList.Remove(returnList[0]);
+        //     //check if a pair still reamins
+        //     if (AnyOfAKind(table, computerHandCopy, 2) != null)
+        //     {
+        //         //computer has 2 pair, wins
+        //         DeclareWinner(AnyOfAKind(table, computerHand, 2), "Computer", "2 Pair");
+        //         return;
 
-            }
-        }
+        //     }
+        // }
         //Pair
-        var pairPlayerReturn = AnyOfAKind(table, playerHand, 2);
-        var pairCompReturn = AnyOfAKind(table, computerHand, 2);
         if (AnyOfAKind(table, playerHand, 2) != null && AnyOfAKind(table, computerHand, 2) == null)
         {
             //player wins
@@ -251,7 +270,12 @@ class GameEngine
 
 
         //if player has an ace and computer doesn't, or if the value of player's high card is greater than comp's
-        if (orderedPlayer[0].Value == 1 && orderedComputer[0].Value != 1 || orderedPlayer[0].Value > orderedComputer[0].Value)
+        if (orderedPlayer[0].Value == 1 && orderedComputer[0].Value != 1)
+        {
+            DeclareWinner(orderedPlayer, "Player", "High Card");
+            return;
+        }
+        else if (orderedPlayer[0].Value > orderedComputer[0].Value)
         {
             DeclareWinner(orderedPlayer, "Player", "High Card");
             return;
@@ -438,7 +462,49 @@ class GameEngine
 
         return groupings.FirstOrDefault()?.cards; // ?. only go into object if it is not null and exists
     }
-
+    public List<Card> TwoPair(TexasTable table, Hand hand)
+    {
+        //create new instance of hand, copy the handlist to be the same as hand passed in, run checks, remove from copy
+        var playerHandCopy = new Hand();
+        playerHandCopy.HandList.AddRange(hand.HandList);
+        // 5 Q Q 10 8 7 2 
+        // 
+        var returnList = AnyOfAKind(table, hand, 2);
+        //if the returnList is not null, we have at least 1 pair.
+        if (returnList != null)
+        {
+            //remove the first card in return list from hand, run check again to see if still a pair
+            // need to combine with table, so that if the table has a pair
+            // playerHandCopy.HandList.AddRange(table.TableList);
+            playerHandCopy.HandList.Remove(returnList[0]);
+            var tableCopy = new TexasTable(new Deck());
+            tableCopy.TableList.AddRange(table.TableList);
+            tableCopy.TableList.Remove(returnList[0]);
+            if (AnyOfAKind(tableCopy, playerHandCopy, 2) != null)
+            {
+                return returnList;
+            }
+        }
+        return null;
+    }
+    public List<Card> FullHouse(TexasTable table, Hand hand)
+    {
+        var playerHandCopy = new Hand();
+        playerHandCopy.HandList.AddRange(hand.HandList);
+        var threeOfAKind = AnyOfAKind(table, hand, 3);
+        if (threeOfAKind != null)
+        {
+            //they have 3 of a kind, check for pair
+            //need to remove at least 2 from the handList, or else the pair will return with values that were used in the 3ofakind check
+            playerHandCopy.HandList.Remove(threeOfAKind[0]);
+            playerHandCopy.HandList.Remove(threeOfAKind[0]);
+            if (AnyOfAKind(table, playerHandCopy, 2) != null)
+            {
+                return threeOfAKind;
+            }
+        }
+        return null;
+    }
 
     public void TexasHoldEm()
     {
@@ -453,10 +519,7 @@ class GameEngine
 
 
             // Console.WriteLine($"The deck has {deck.DeckList.Count}");
-            if (Quit())
-            {
-                break;
-            }
+
             deck.Shuffle();
             deck.Shuffle();
             deck.Shuffle();
