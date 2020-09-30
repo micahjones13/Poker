@@ -197,10 +197,12 @@ class GameEngine
         if (TwoPair(table, playerHand) != null && TwoPair(table, computerHand) == null)
         {
             DeclareWinner(TwoPair(table, playerHand), "Player", "2 Pair");
+            return;
         }
         else if (TwoPair(table, playerHand) == null && TwoPair(table, computerHand) != null)
         {
             DeclareWinner(TwoPair(table, computerHand), "Computer", "2 Pair");
+            return;
         }
         //! Problem here. 2 pairs will always be true, since anyofakind function returns the first occurence of a pair, and doesn't remove that pair when called again.
         //! Problem: this check still won't work if player has 2 pair, but computer has 1. It doesn't make it into the if, because computer has a pair.
@@ -467,8 +469,9 @@ class GameEngine
         //create new instance of hand, copy the handlist to be the same as hand passed in, run checks, remove from copy
         var playerHandCopy = new Hand();
         playerHandCopy.HandList.AddRange(hand.HandList);
-        // 5 Q Q 10 8 7 2 
-        // 
+        // 9 Q - Q 2 9 7 1
+        // rm Q from hand
+        // 9 - Q 2 9 7 1
         var returnList = AnyOfAKind(table, hand, 2);
         //if the returnList is not null, we have at least 1 pair.
         if (returnList != null)
