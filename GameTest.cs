@@ -82,15 +82,21 @@ class GameTest
     public void FullHouseTest()
     {
         // 3 of a kind with a pair. This case: 2 of hearts, clubs, diamonds & 3 of hearts, spades
-        TestHand.HandList = new List<Card> { new Card { Value = 2, Type = CardType.Hearts }, new Card { Value = 2, Type = CardType.Clubs } };
-        TestTable.TableList = new List<Card> { new Card { Value = 2, Type = CardType.Diamonds }, new Card { Value = 3, Type = CardType.Spades }, new Card { Value = 3, Type = CardType.Hearts } };
-        var fullHouseReturn1 = TestGame.AnyOfAKind(TestTable, TestHand, 3); // Check for 3 of a kind first
-        var fullHouseReturn2 = TestGame.AnyOfAKind(TestTable, TestHand, 2); // pair after
-        if (fullHouseReturn1 != null && fullHouseReturn2 != null)
+        TestHand.HandList = new List<Card> { new Card { Value = 2, Type = CardType.Hearts }, new Card { Value = 12, Type = CardType.Clubs } };
+        TestTable.TableList = new List<Card> {
+            new Card { Value = 12, Type = CardType.Diamonds },
+            new Card { Value = 12, Type = CardType.Spades },
+            new Card { Value = 3, Type = CardType.Hearts },
+            new Card { Value = 2, Type = CardType.Clubs },
+            new Card { Value = 11, Type = CardType.Hearts }
+        };
+        var fullHouse = TestGame.FullHouse(TestTable, TestHand);
+
+        if (fullHouse != null)
         {
             Console.WriteLine("SUCCESS: Full House Working");
             Console.WriteLine("Full house return: ");
-            fullHouseReturn1.PrintCards();
+            fullHouse.PrintCards();
             Console.WriteLine("*************************");
         }
         else
@@ -159,36 +165,32 @@ class GameTest
     public void TwoPairTest()
     {
         //2 diff pairs, this case 2 2's and 2 3's 
-        TestHand.HandList = new List<Card> { new Card { Value = 2, Type = CardType.Hearts }, new Card { Value = 3, Type = CardType.Clubs } };
-        TestTable.TableList = new List<Card> { new Card { Value = 2, Type = CardType.Diamonds }, new Card { Value = 3, Type = CardType.Spades }, new Card { Value = 4, Type = CardType.Hearts } };
+        TestHand.HandList = new List<Card> { new Card { Value = 9, Type = CardType.Hearts }, new Card { Value = 12, Type = CardType.Clubs } };
+        TestTable.TableList = new List<Card> {
+             new Card { Value = 12, Type = CardType.Diamonds },
+             new Card { Value = 2, Type = CardType.Spades },
+             new Card { Value = 7, Type = CardType.Hearts },
+             new Card { Value = 9, Type = CardType.Clubs },
+             new Card { Value = 1, Type = CardType.Diamonds}
+             };
         var testHandCopy = new Hand();
+        //copy of testHand, adding the orignal handList to it and the tablelist 
         testHandCopy.HandList.AddRange(TestHand.HandList);
+        // testHandCopy.HandList.AddRange(TestTable.TableList);
         var firstPair = TestGame.AnyOfAKind(TestTable, TestHand, 2);
         var handWithoutRemoval = TestGame.AnyOfAKind(TestTable, TestHand, 2);
+        var twoPair = TestGame.TwoPair(TestTable, TestHand);
 
-
-        if (firstPair != null)
+        if (twoPair != null)
         {
-            // TestHand.HandList.Remove(firstPair[0]);
-            testHandCopy.HandList.Remove(firstPair[0]);
-            TestTable.TableList.Remove(firstPair[0]);
-            var secondPair = TestGame.AnyOfAKind(TestTable, testHandCopy, 2); //! Needs to use 
-            if (secondPair != null)
-            {
-                Console.WriteLine("SUCCESS: 2 pair Worked");
-                Console.WriteLine("2 pair return");
-                handWithoutRemoval.PrintCards();
-                Console.WriteLine("*************************");
-            }
-            else
-            {
-                Console.WriteLine("FAIL: 2 pair returned only 1 pair");
-                Console.WriteLine("*************************");
-            }
+            Console.WriteLine("SUCCESS: 2 Pair Worked");
+            Console.WriteLine("2 Pair return: ");
+            twoPair.PrintCards();
+            Console.WriteLine("*************************");
         }
         else
         {
-            Console.WriteLine("FAIL: 2 pair returned null during first pair check");
+            Console.WriteLine("FAIL: 2 pair returned null");
             Console.WriteLine("*************************");
         }
     }
@@ -243,22 +245,8 @@ class GameTest
             Console.WriteLine($"Player sum: {TestGame.Bust(TestHand)}");
         }
     }
-    public void AcesTests()
-    {
-        //Tests interactions with aces. 
-        //2 Aces, expect value to be 11
-        TestHand.HandList = new List<Card> { new Card { Value = 1, Type = CardType.Hearts }, new Card { Value = 1, Type = CardType.Diamonds } };
-        //3 Aces, Expect value to be 12
-        TestHand.HandList = new List<Card> { new Card { Value = 1, Type = CardType.Hearts }, new Card { Value = 1, Type = CardType.Diamonds } };
-        //4 aces, expect value to be 13
-        TestHand.HandList = new List<Card> { new Card { Value = 1, Type = CardType.Hearts }, new Card { Value = 1, Type = CardType.Diamonds } };
-
-
-
-
-    }
     public void RunBlackJackTests()
     {
-
+        BothBust();
     }
 }
